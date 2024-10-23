@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Weather Knowledge Base</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #2c3e50;
+        }
+
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .question-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .response-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .response {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .question {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .answer {
+            color: #34495e;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .input-group {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Advanced Weather Expert</h1>
+            <p>Your comprehensive guide to weather, climate, and atmospheric phenomena!</p>
+        </div>
+
+        <div class="question-form">
+            <div class="category-buttons" id="categoryButtons"></div>
+            <div class="input-group">
+                <input type="text" id="questionInput" placeholder="Ask about any weather topic..." autocomplete="off">
+                <button onclick="askQuestion()">Ask</button>
+            </div>
+        </div>
+
+        <div class="response-container" id="responseContainer"></div>
+    </div>
+
+    <script>
+        const answers = {
+            // Cloud Types
+            "cumulus": "Cumulus clouds are fluffy, white clouds with flat bases. They form when warm air rises and cools, creating cotton-like puffs. They often indicate fair weather but can develop into thunderstorms.",
+            "stratus": "Stratus clouds are gray, uniform layers that blanket the sky. They form at low altitudes and can produce light rain or drizzle. They're common in cool, stable air conditions.",
+            "cirrus": "Cirrus clouds are thin, wispy clouds made of ice crystals at high altitudes. They often indicate approaching weather changes and can create beautiful halos around the sun or moon.",
+            "cumulonimbus": "Cumulonimbus clouds are massive thunderstorm clouds that can reach up to 60,000 feet. They produce heavy rain, lightning, and sometimes hail or tornadoes.",
+
+            // Advanced Weather Phenomena
+            "el nino": "El Niño is a climate pattern where the Pacific Ocean near the equator becomes warmer than usual, affecting weather worldwide. It can cause droughts in Asia and flooding in the Americas.",
+            "la nina": "La Niña is the opposite of El Niño, with cooler Pacific Ocean temperatures. It typically brings more rain to Southeast Asia and Australia, and drier conditions to the Americas.",
+            "jet stream": "The jet stream is a fast-moving river of air high in the atmosphere that affects weather patterns. It typically flows west to east and can reach speeds over 200 mph.",
+            "trade winds": "Trade winds are steady winds that blow toward the equator from the northeast in the Northern Hemisphere and from the southeast in the Southern Hemisphere. They're crucial for global weather patterns.",
+            "monsoon": "Monsoons are seasonal wind shifts that bring heavy rainfall to regions like South Asia. They occur when temperature differences between land and ocean cause major wind direction changes.",
+            "aurora": "The Aurora (Northern/Southern Lights) occurs when solar particles interact with Earth's magnetic field, creating colorful displays in the sky. They're most visible near the Earth's poles.",
+
+            // Advanced Storm Types
+            "supercell": "Supercell thunderstorms are rotating storms that can last for hours. They're the most dangerous type of thunderstorm and often produce large hail, strong tornadoes, and severe winds.",
+            "derecho": "A derecho is a long-lived line of severe thunderstorms that produces widespread straight-line wind damage. They can travel hundreds of miles and cause extensive destruction.",
+            "microburst": "A microburst is a powerful, concentrated downdraft that creates severe straight-line winds. These sudden, intense events can be as dangerous as tornadoes but are usually smaller in area.",
+
+            // Atmospheric Science
+            "coriolis": "The Coriolis effect is Earth's rotation causing moving objects and air to deflect right in the Northern Hemisphere and left in the Southern Hemisphere. It strongly influences global wind patterns.",
+            "hadley cell": "The Hadley cell is a large-scale atmospheric circulation pattern where warm air rises near the equator, moves toward the poles at high altitudes, then sinks and returns to the equator.",
+            "atmospheric layers": "Earth's atmosphere has five main layers: troposphere (where weather occurs), stratosphere (contains ozone layer), mesosphere (where meteors burn up), thermosphere, and exosphere.",
+
+            // Weather Instruments
+            "barometer": "A barometer measures atmospheric pressure. Rising pressure usually indicates fair weather, while falling pressure often signals approaching storms.",
+            "anemometer": "An anemometer measures wind speed using rotating cups or sonic technology. It's essential for weather stations and wind energy assessment.",
+            "weather balloon": "Weather balloons carry instruments called radiosondes to measure temperature, humidity, pressure, and winds up to 100,000 feet in the atmosphere.",
+
+            // Climate Zones
+            "tropical": "Tropical climates are hot and humid year-round, with abundant rainfall. They're found near the equator and support rainforests and diverse ecosystems.",
+            "temperate": "Temperate climates have moderate temperatures with four distinct seasons. They're found between tropical and polar regions and support deciduous forests.",
+            "polar": "Polar climates are very cold year-round, with long, dark winters and cool summers. They're found near the Earth's poles and support tundra vegetation.",
+
+            // Advanced Precipitation
+            "lake effect": "Lake effect snow occurs when cold air moves across warm lake water, picking up moisture and dropping heavy snow on the downwind shore. Common near the Great Lakes.",
+            "acid rain": "Acid rain forms when air pollution combines with water in the atmosphere. It can harm plants, aquatic life, and buildings. It's caused by industrial emissions and vehicle exhaust.",
+            
+            // Ocean-Weather Interaction
+            "gulf stream": "The Gulf Stream is a warm ocean current that flows along North America's east coast. It moderates climate and influences weather patterns in Western Europe.",
+            "ocean currents": "Ocean currents are like rivers in the sea that move warm and cold water around the globe. They strongly influence regional climates and weather patterns.",
+
+            // Weather Forecasting
+            "computer models": "Weather forecasting uses powerful computers to solve complex mathematical equations that predict how the atmosphere will change. Models analyze millions of measurements.",
+            "doppler radar": "Doppler radar can detect precipitation and measure its motion, helping meteorologists track storms and predict their movement. It's crucial for severe weather warnings.",
+            "weather map": "Weather maps use symbols to show conditions, fronts, and pressure systems. Isobars connect points of equal pressure, while isotherms connect points of equal temperature.",
+
+            // Climate Change
+            "greenhouse effect": "The greenhouse effect occurs when gases like CO2 trap heat in the atmosphere. While natural, increased greenhouse gases from human activities are warming Earth's climate.",
+            "carbon cycle": "The carbon cycle is the movement of carbon between air, land, ocean, and living things. Human activities have disrupted this cycle by adding excess CO2 to the atmosphere.",
+            "feedback loops": "Climate feedback loops are cycles that can amplify or reduce climate change. For example, melting Arctic ice reduces reflection of sunlight, leading to more warming.",
+
+            // Simple Answers (kept from original)
+            "rain": "Rain occurs when water droplets in clouds become too heavy and fall. The size of drops depends on cloud temperature and humidity.",
+            "snow": "Snow forms when water vapor freezes directly into ice crystals in below-freezing temperatures. Crystal shape depends on temperature and humidity.",
+            "thunder": "Thunder is the sound of rapid air expansion caused by lightning heating the air to extremely high temperatures almost instantly.",
+            "rainbow": "Rainbows form when sunlight enters water droplets, separates into colors through refraction and reflection, then exits at specific angles.",
+        };
+
+        // Create category buttons
+        const categories = {
+            "Clouds": ["cumulus", "stratus", "cirrus", "cumulonimbus"],
+            "Storms": ["supercell", "derecho", "microburst", "thunder"],
+            "Climate": ["el nino", "la nina", "tropical", "temperate", "polar"],
+            "Atmosphere": ["coriolis", "hadley cell", "atmospheric layers", "jet stream"],
+            "Instruments": ["barometer", "anemometer", "weather balloon", "doppler radar"]
+        };
+
+        function createCategoryButtons() {
+            const container = document.getElementById('categoryButtons');
+            Object.keys(categories).forEach(category => {
+                const button = document.createElement('button');
+                button.className = 'category-btn';
+                button.textContent = category;
+                button.onclick = () => showCategoryTopics(category);
+                container.appendChild(button);
+            });
+        }
+
+        function showCategoryTopics(category) {
+            const topics = categories[category].join(', ');
+            addResponse(`Topics in ${category}`, topics);
+        }
+
+        function findAnswer(question) {
+            question = question.toLowerCase();
+            
+            // Check each keyword in the answers object
+            for (let key in answers) {
+                if (question.includes(key)) {
+                    return answers[key];
+                }
+            }
+
+            return "Try asking about specific weather topics! You can click the category buttons above to see available topics, or ask about any weather phenomenon you're curious about.";
+        }
+
+        function addResponse(question, answer) {
+            const responseContainer = document.getElementById('responseContainer');
+            const responseElement = document.createElement('div');
+            responseElement.className = 'response';
+            responseElement.innerHTML = `
+                <div class="question">Q: ${question}</div>
+                <div class="answer">A: ${answer}</div>
+            `;
+            responseContainer.insertBefore(responseElement, responseContainer.firstChild);
+        }
+
+        function askQuestion() {
+            const questionInput = document.getElementById('questionInput');
+            const question = questionInput.value.trim();
+
+            if (question === '') return;
+
+            const answer = findAnswer(question);
+            addResponse(question, answer);
+            questionInput.value = '';
+        }
+
+        document.getElementById('questionInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                askQuestion();
+            }
+        });
+
+        // Initialize category buttons
+        createCategoryButtons();
+    </script>
+</body>
+</html>
